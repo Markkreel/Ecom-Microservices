@@ -14,6 +14,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtConfig jwtConfig;
+    private final EventPublisherService eventPublisherService;
 
     public String register(UserRegistrationRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -27,6 +28,7 @@ public class UserService {
                 .build();
 
         userRepository.save(user);
+        eventPublisherService.publishUserCreated(user.getId().toString(), user.getEmail());
         return jwtConfig.generateToken(user.getEmail());
     }
 
@@ -81,6 +83,8 @@ public class UserService {
 
         user.setName(request.getName());
         userRepository.save(user);
+
+        eventPublisherService.publishUserUpdated(user.getId().toString(), user.getEmail(), List.of("name"));
 
         return UserProfileResponse.builder()
                 .userId(user.getId().toString())
