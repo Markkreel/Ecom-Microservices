@@ -9,6 +9,7 @@ from .models.request import CreateOrderRequest
 from .models.response import OrderResponse, PagedOrderResponse
 from .services.auth import get_current_user
 from .services.product import ProductService
+from .services.event_publisher import EventPublisher
 from .utils.config import Settings
 
 app = FastAPI(
@@ -16,6 +17,9 @@ app = FastAPI(
     description="Order management for e-commerce microservices",
     version="1.0.0",
 )
+
+# Initialize event publisher
+event_publisher = EventPublisher()
 
 # CORS middleware configuration
 app.add_middleware(
@@ -67,6 +71,9 @@ async def create_order(
         updatedAt=datetime.utcnow(),
     )
     await order.insert()
+
+    # Publish order created event
+    await event_publisher.publish_order_created(order)
 
     return OrderResponse.from_order(order)
 
