@@ -1,0 +1,132 @@
+name: Microservices CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          [user-service, product-service, order-service, notification-service]
+        include:
+          - service: user-service
+            type: java
+          - service: product-service
+            type: java
+          - service: order-service
+            type: python
+          - service: notification-service
+            type: node
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        if: matrix.type == 'java'
+        uses: actions/setup-java@v3
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: gradle
+
+      - name: Set up Python
+        if: matrix.type == 'python'
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Set up Node.js
+        if: matrix.type == 'node'
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Build and test Java services
+        if: matrix.type == 'java'
+        run: |
+          cd services/${{ matrix.service }}
+          ./gradlew build test
+
+      - name: Build and test Python services
+        if: matrix.type == 'python'
+        run: |
+          cd services/${{ matrix.service }}
+          pip install -r requirements.txt
+          python -m pytest
+
+      - name: Build and test Node.js services
+        if: matrix.type == 'node'
+        run: |
+          cd services/${{ matrix.service }}
+          npm ci
+          npm test
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./services/${{ matrix.service }}
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/${{ matrix.service }}:${{ github.sha }}
+            ghcr.io/${{ github.repository }}/${{ matrix.service }}:latest
+
+  deploy-dev:
+    needs: build
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    environment: development
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: "latest"
+
+      - name: Configure kubectl
+        run: |
+          echo "${{ secrets.KUBE_CONFIG_DEV }}" > kubeconfig.yaml
+          export KUBECONFIG=kubeconfig.yaml
+
+      - name: Deploy to development
+        run: |
+          for service in user-service product-service order-service notification-service; do
+            kubectl set image deployment/$service $service=ghcr.io/${{ github.repository }}/$service:${{ github.sha }} -n development
+          done
+
+  deploy-prod:
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: "latest"
+
+      - name: Configure kubectl
+        run: |
+          echo "${{ secrets.KUBE_CONFIG_PROD }}" > kubeconfig.yaml
+          export KUBECONFIG=kubeconfig.yaml
+
+      - name: Deploy to production
+        run: |
+          for service in user-service product-service order-service notification-service; do
+            kubectl set image deployment/$service $service=ghcr.io/${{ github.repository }}/$service:${{ github.sha }} -n production
+          done
