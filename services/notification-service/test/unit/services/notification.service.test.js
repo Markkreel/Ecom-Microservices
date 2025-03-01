@@ -1,4 +1,4 @@
-const { expect } = require("chai");
+const { expect, describe, it, beforeEach, afterEach } = require('@jest/globals');
 const sinon = require("sinon");
 const {
   NotificationService,
@@ -63,7 +63,7 @@ describe("NotificationService", () => {
 
       try {
         await notificationService.sendNotification(notificationData);
-        expect.fail("Should have thrown an error");
+        fail("Should have thrown an error");
       } catch (err) {
         expect(err).to.equal(error);
       }

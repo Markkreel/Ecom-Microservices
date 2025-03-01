@@ -44,7 +44,7 @@ describe("NotificationController", () => {
 
       await notificationController.sendNotification(mockReq, mockRes);
 
-      expect(mockRes.status.calledWith(200)).to.be.true;
+      expect(mockRes.status.calledWith(200)).toBeTruthy();
       expect(
         mockRes.json.calledWith({
           success: true,
@@ -53,7 +53,7 @@ describe("NotificationController", () => {
             status: "SENT",
           },
         })
-      ).to.be.true;
+      ).toBeTruthy();
     });
 
     it("should handle errors when sending notification fails", async () => {
@@ -74,13 +74,13 @@ describe("NotificationController", () => {
 
       await notificationController.sendNotification(mockReq, mockRes);
 
-      expect(mockRes.status.calledWith(500)).to.be.true;
+      expect(mockRes.status.calledWith(500)).toBeTruthy();
       expect(
         mockRes.json.calledWith({
           success: false,
           error: "Failed to send notification",
         })
-      ).to.be.true;
+      ).toBeTruthy();
     });
   });
 
@@ -105,7 +105,7 @@ describe("NotificationController", () => {
 
       await notificationController.getNotificationHistory(mockReq, mockRes);
 
-      expect(mockRes.status.calledWith(200)).to.be.true;
+      expect(mockRes.status.calledWith(200)).toBeTruthy();
       expect(
         mockRes.json.calledWith({
           success: true,
