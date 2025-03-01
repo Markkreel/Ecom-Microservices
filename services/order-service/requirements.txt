@@ -4,8 +4,11 @@ pydantic==1.10.7
 python-jose[cryptography]==3.3.0
 passlib==1.7.4
 python-multipart==0.0.6
-motor==3.1.1
-pymongo==4.3.3
 requests==2.31.0
 python-dotenv==1.0.0
+sqlalchemy==2.0.19
+psycopg2-binary==2.9.7
+alembic==1.11.1
+asyncpg==0.28.0
+sqlalchemy-utils==0.41.1
 beanie==1.19.2
