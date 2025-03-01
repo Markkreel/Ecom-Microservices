@@ -1,0 +1,25 @@
+# Build stage for testing
+FROM node:18-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Install MongoDB tools
+RUN apk add --no-cache mongodb-tools
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies including dev dependencies
+RUN npm install
+
+# Copy source code and test files
+COPY src/ ./src/
+COPY test/ ./test/
+
+# Set environment variables for testing
+ENV NODE_ENV=test
+ENV MONGODB_URI=mongodb://localhost:27017/notification-service-test
+
+# Run tests command
+CMD ["npm", "test"]

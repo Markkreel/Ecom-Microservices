@@ -1,0 +1,30 @@
+# Build stage for testing
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements file
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy source code and test files
+COPY app/ ./app/
+COPY test/ ./test/
+COPY alembic.ini .
+
+# Set environment variables for testing
+ENV PYTHONPATH=/app
+ENV TESTING=true
+ENV DATABASE_URL=postgresql://test:test@localhost:5432/order_service_test
+
+# Run tests command
+CMD ["python", "-m", "pytest", "test/", "-v"]
