@@ -58,8 +58,8 @@ docker-compose up -d
 ## Project Structure
 
 ```
-├── .github/workflows    # CI/CD pipeline configurations
-├── api-gateway         # API Gateway service
+├── .github/workflows  # CI/CD pipeline configurations
+├── api-gateway        # API Gateway service
 ├── docs               # Project documentation
 ├── infrastructure     # Docker, K8s, and Terraform configs
 ├── scripts            # Utility scripts
@@ -85,6 +85,7 @@ docker-compose up -d
    - Submit PRs for code review
 
 3. **API Design**
+
    - Follow RESTful principles
    - Use consistent error handling
    - Document APIs using OpenAPI/Swagger
