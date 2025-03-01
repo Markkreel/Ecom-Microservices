@@ -12,11 +12,13 @@ describe("Notification Service Integration Tests", () => {
     mongoServer = await MongoMemoryServer.create();
     const mongoUri = mongoServer.getUri();
     await mongoose.connect(mongoUri);
+    server = app.listen(0);
   });
 
   afterAll(async () => {
     await mongoose.disconnect();
     await mongoServer.stop();
+    await server.close();
   });
 
   beforeEach(async () => {
