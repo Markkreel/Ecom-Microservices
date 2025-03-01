@@ -4,25 +4,41 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.index.Indexed;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import java.time.LocalDateTime;
+import java.util.Map;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "users")
+@Document(collection = "users")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
     
+    @Indexed(unique = true)
     private String email;
-    private String password;
+    private String passwordHash;
     private String name;
+    
+    private Address address;
+    private Map<String, Object> preferences;
+    
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Address {
+        private String street;
+        private String city;
+        private String state;
+        private String zipCode;
+        private String country;
+    }
 }
