@@ -77,13 +77,11 @@ docker-compose up -d
    - Follow language-specific style guides
    - Use consistent naming conventions
    - Write comprehensive unit tests
-
 2. **Git Workflow**
 
    - Create feature branches from `develop`
    - Use meaningful commit messages
    - Submit PRs for code review
-
 3. **API Design**
 
    - Follow RESTful principles
@@ -121,7 +119,7 @@ Terraform configurations are available in `infrastructure/terraform/` for cloud 
 1. Fork the repository
 2. Create your feature branch
 3. Commit your changes
-4. Push to the branch
+4. Push to the branchw
 5. Create a new Pull Request
 
 ## License
