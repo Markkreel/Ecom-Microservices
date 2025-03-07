@@ -77,11 +77,13 @@ docker-compose up -d
    - Follow language-specific style guides
    - Use consistent naming conventions
    - Write comprehensive unit tests
+
 2. **Git Workflow**
 
    - Create feature branches from `develop`
    - Use meaningful commit messages
    - Submit PRs for code review
+
 3. **API Design**
 
    - Follow RESTful principles
@@ -130,4 +132,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 For support and questions, please open an issue in the GitHub repository.
 
-**Last Updated:** 03-03-2025 ⸺ **Last Reviewed:** 01-03-2025
+**Last Updated:** 03-03-2025 ⸺ **Last Reviewed:** 07-03-2025
