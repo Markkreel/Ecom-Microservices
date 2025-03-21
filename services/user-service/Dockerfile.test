@@ -1,0 +1,28 @@
+# Build stage for testing
+FROM eclipse-temurin:17-jdk-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Install build dependencies
+RUN apk add --no-cache \
+    curl \
+    unzip \
+    bash
+
+# Copy Gradle files
+COPY build.gradle settings.gradle ./
+COPY gradle/ ./gradle/
+
+# Copy source code and test files
+COPY src/ ./src/
+
+# Set environment variables for testing
+ENV SPRING_PROFILES_ACTIVE=test
+ENV SPRING_DATASOURCE_URL=jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+ENV SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.h2.Driver
+
+# Make gradlew executable and run tests
+COPY gradlew ./
+RUN chmod +x ./gradlew
+CMD ["./gradlew", "test", "--no-daemon"]
